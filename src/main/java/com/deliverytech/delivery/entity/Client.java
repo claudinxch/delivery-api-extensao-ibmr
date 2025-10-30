@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "clients")
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String name;

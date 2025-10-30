@@ -27,7 +27,7 @@ INSERT INTO products (name, description, price, category, available, restaurant_
 ('Temaki Atum', 'Temaki de atum com cream cheese', 15.90, 'Temaki', true, (SELECT id FROM restaurants WHERE name = 'Sushi Master'));
 
 -- Inserir pedidos de exemplo
-INSERT INTO orders (order_number, created_at, status, total_price, observations, client_id, restaurant_id, items) VALUES
-('PED1234567890', CURRENT_TIMESTAMP, 'PENDENTE', 54.80, 'Sem cebola na pizza', 1, 1, 'Pizza Margherita, Pizza Calabresa'),
-('PED1234567891', CURRENT_TIMESTAMP, 'CONFIRMADO', 41.80, '', 2, 2, 'X-Burger, Batata Frita'),
-('PED1234567892', CURRENT_TIMESTAMP, 'ENTREGUE', 78.80, 'Wasabi à parte', 3, 3, 'Combo Sashimi, Hot Roll Salmão, Temaki Atum');
+INSERT INTO orders (order_number, created_at, status, total_price, observation, client_id, restaurant_id, items) VALUES
+('PED1234567890', CURRENT_TIMESTAMP, 'PENDENTE', 54.80, 'Sem cebola na pizza', (SELECT id FROM clients WHERE email = 'joao@email.com'), (SELECT id FROM restaurants WHERE name = 'Pizzaria Bella'), 'Pizza Margherita, Pizza Calabresa'),
+('PED1234567891', CURRENT_TIMESTAMP, 'CONFIRMADO', 41.80, '', (SELECT id FROM clients WHERE email = 'maria@email.com'), (SELECT id FROM restaurants WHERE name = 'Burger House'), 'X-Burger, Batata Frita'),
+('PED1234567892', CURRENT_TIMESTAMP, 'ENTREGUE', 78.80, 'Wasabi à parte', (SELECT id FROM clients WHERE email = 'pedro@email.com'), (SELECT id FROM restaurants WHERE name = 'Sushi Master'), 'Combo Sashimi, Hot Roll Salmão, Temaki Atum');

@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/clients")
 @CrossOrigin(origins = "*")
@@ -27,6 +31,60 @@ public class ClientController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Client>> list() {
+        List<Client> clients = clientService.listActive();
+        return ResponseEntity.ok(clients);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable UUID id) {
+            Optional<Client> client = clientService.findById(id);
+
+            if(client.isEmpty()) return ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(client.get());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateClient(@PathVariable UUID id, @Validated @RequestBody Client client) {
+        try {
+            Client updatedClient = clientService.update(id, client);
+            return ResponseEntity.ok(updatedClient);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Internal server error no servidor");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deactivate(@PathVariable UUID id) {
+        try {
+            clientService.deactivate(id);
+            return ResponseEntity.ok().body("Client deactivated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Internal server error");
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Client>> search(@RequestParam String name) {
+        List<Client> clients = clientService.findByName(name);
+        return ResponseEntity.ok(clients);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<?> findByEmail(@PathVariable String email) {
+        Optional<Client> client = clientService.findByEmail(email);
+
+        if(client.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(client.get());
     }
 }
 
