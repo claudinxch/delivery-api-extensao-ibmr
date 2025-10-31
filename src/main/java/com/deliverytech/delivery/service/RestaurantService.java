@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,11 +19,23 @@ public class RestaurantService {
     private RestaurantRepository restaurantRepository;
 
     public Restaurant create(Restaurant restaurant) {
-        if(restaurantRepository.existsByNameIgnoreCase(restaurant.getName())){
+        if (restaurantRepository.existsByNameIgnoreCase(restaurant.getName())){
             throw new IllegalArgumentException("Restaurant name already exists");
         }
 
+        if (restaurantRepository.existsByPhoneNumber(restaurant.getPhoneNumber())) {
+            throw new IllegalArgumentException("Phone number already registered");
+        }
+
         validateRestaurantData(restaurant);
+
+        if (restaurant.getRating() == null) {
+            restaurant.setRating(BigDecimal.ZERO);
+        }
+
+        if (restaurant.getDelivery_fee() == null) {
+            restaurant.setDelivery_fee(BigDecimal.ZERO);
+        }
 
         restaurant.setActive(true);
         return restaurantRepository.save(restaurant);
@@ -40,11 +53,17 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public List<Restaurant> listByCategory(String category) {
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("Category must be provided");
+        }
         return restaurantRepository.findByCategoryIgnoreCase(category);
     }
 
     @Transactional(readOnly = true)
     public List<Restaurant> listByCategory(String category, boolean orderByDesc) {
+        if (category == null || category.trim().isEmpty()) {
+            throw new IllegalArgumentException("Category must be provided");
+        }
         return restaurantRepository.findByCategoryAndActiveTrueOrderByRatingDesc(category);
     }
 
@@ -69,6 +88,34 @@ public class RestaurantService {
         restaurant.setDelivery_fee(updatedRestaurant.getDelivery_fee());
 
         return restaurantRepository.save(restaurant);
+    }
+
+    public void deactivate(UUID id) {
+        Restaurant restaurant = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found: " + id));
+
+        if (!restaurant.getActive()) {
+            throw new IllegalStateException("Restaurant is already deactivated");
+        }
+
+        restaurant.deactivate();
+        restaurantRepository.save(restaurant);
+    }
+
+    public void activate(UUID id) {
+        Restaurant restaurant = findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found: " + id));
+
+        if (restaurant.getActive()) {
+            throw new IllegalStateException("Restaurant is already activated");
+        }
+
+        restaurant.activate();
+        restaurantRepository.save(restaurant);
+    }
+
+    public boolean isRestaurantActive(UUID id) {
+        return restaurantRepository.existsByIdAndActiveTrue(id);
     }
 
     private void validateRestaurantData(Restaurant restaurant) {

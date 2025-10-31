@@ -12,6 +12,10 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, UUID> {
 
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsByIdAndActiveTrue(UUID id);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
     List<Restaurant> findByCategoryIgnoreCase(String category);
 
     List<Restaurant> findByActiveTrue();
