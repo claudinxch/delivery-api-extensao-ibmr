@@ -32,4 +32,12 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public void activate() {
+        this.available = true;
+    }
+
+    public void deactivate() {
+        this.available = false;
+    }
 }

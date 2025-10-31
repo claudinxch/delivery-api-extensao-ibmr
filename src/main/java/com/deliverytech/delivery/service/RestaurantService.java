@@ -87,6 +87,8 @@ public class RestaurantService {
         restaurant.setCategory(updatedRestaurant.getCategory());
         restaurant.setDelivery_fee(updatedRestaurant.getDelivery_fee());
 
+        validateRestaurantData(restaurant);
+
         return restaurantRepository.save(restaurant);
     }
 

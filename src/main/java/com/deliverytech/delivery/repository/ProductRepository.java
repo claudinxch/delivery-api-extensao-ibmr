@@ -10,9 +10,11 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findByRestaurant(Restaurant restaurant);
 
-    boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCaseAndRestaurant(String name, Restaurant restaurant);
 
-    List<Product> findByCategoryIgnoreCase(String category);
+    List<Product> findByAvailableTrueAndCategoryIgnoreCase(String category);
 
     List<Product> findByAvailableTrue();
+
+    List<Product> findByAvailableTrueAndRestaurant(Restaurant restaurant);
 }
