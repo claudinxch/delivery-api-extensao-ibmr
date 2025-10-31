@@ -42,4 +42,21 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    public void addProduct(Product product) {
+        this.items.add(product);
+    }
+
+    public void updateStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public void calculatePrice() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (Product p : items){
+            total = total.add(p.getPrice());
+        }
+
+        this.totalPrice = total;
+    }
 }
